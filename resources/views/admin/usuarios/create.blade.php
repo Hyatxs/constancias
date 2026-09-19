@@ -1,125 +1,94 @@
-@extends('layouts.app')
+@extends('template')
+@section('title','Crear Usuario')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Crear usuario (panel de administración)') }}</div>
+<div class="container mx-auto px-4">
+    <h1 class="text-2xl font-bold my-6 text-center">Crear usuario</h1>
 
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
+    <div class="max-w-xl mx-auto bg-white shadow rounded p-6">
 
-                    <form method="POST" action="{{ route('admin.usuarios.store') }}">
-                        @csrf
-
-                        <div class="row mb-3">
-                            <label for="nombre" class="col-md-4 col-form-label text-md-end">{{ __('Nombre') }}</label>
-                            <div class="col-md-6">
-                                <input id="nombre" type="text" class="form-control @error('nombre') is-invalid @enderror" name="nombre" value="{{ old('nombre') }}" required autofocus>
-                                @error('nombre')
-                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="apellido_paterno" class="col-md-4 col-form-label text-md-end">{{ __('Apellido Paterno') }}</label>
-                            <div class="col-md-6">
-                                <input id="apellido_paterno" type="text" class="form-control @error('apellido_paterno') is-invalid @enderror" name="apellido_paterno" value="{{ old('apellido_paterno') }}" required>
-                                @error('apellido_paterno')
-                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="apellido_materno" class="col-md-4 col-form-label text-md-end">{{ __('Apellido Materno') }}</label>
-                            <div class="col-md-6">
-                                <input id="apellido_materno" type="text" class="form-control @error('apellido_materno') is-invalid @enderror" name="apellido_materno" value="{{ old('apellido_materno') }}" required>
-                                @error('apellido_materno')
-                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Correo Electrónico') }}</label>
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required>
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Contraseña') }}</label>
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="password-confirm" class="col-md-4 col-form-label text-md-end">{{ __('Confirmar Contraseña') }}</label>
-                            <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="rol" class="col-md-4 col-form-label text-md-end">{{ __('Rol') }}</label>
-                            <div class="col-md-6">
-                                {{-- Aquí SÍ van los 5 roles, a diferencia del registro público que solo usa roles() --}}
-                                <select id="rol" name="rol" class="form-control @error('rol') is-invalid @enderror" required>
-                                    @foreach(\App\Models\Usuarios::allRoles() as $key => $value)
-                                        <option value="{{ $key }}" {{ old('rol') == $key ? 'selected' : '' }}>
-                                            {{ $value }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('rol')
-                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="matricula" class="col-md-4 col-form-label text-md-end">{{ __('Matrícula') }}</label>
-                            <div class="col-md-6">
-                                <input id="matricula" type="text" class="form-control @error('matricula') is-invalid @enderror" name="matricula" value="{{ old('matricula') }}" required>
-                                @error('matricula')
-                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="telefono" class="col-md-4 col-form-label text-md-end">{{ __('Teléfono') }}</label>
-                            <div class="col-md-6">
-                                <input id="telefono" type="text" class="form-control @error('telefono') is-invalid @enderror" name="telefono" value="{{ old('telefono') }}" required>
-                                @error('telefono')
-                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">{{ __('Crear usuario') }}</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+        @if ($errors->any())
+            <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                <ul class="list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
-        </div>
+        @endif
+
+        <form method="POST" action="{{ route('admin.usuarios.store') }}">
+            @csrf
+
+            <div class="mb-4">
+                <label for="nombre" class="block text-gray-700 font-semibold mb-1">Nombre</label>
+                <input id="nombre" type="text" name="nombre" value="{{ old('nombre') }}" required autofocus
+                    class="w-full border rounded px-3 py-2">
+            </div>
+
+            <div class="mb-4">
+                <label for="apellido_paterno" class="block text-gray-700 font-semibold mb-1">Apellido Paterno</label>
+                <input id="apellido_paterno" type="text" name="apellido_paterno" value="{{ old('apellido_paterno') }}"
+                    class="w-full border rounded px-3 py-2">
+            </div>
+
+            <div class="mb-4">
+                <label for="apellido_materno" class="block text-gray-700 font-semibold mb-1">Apellido Materno</label>
+                <input id="apellido_materno" type="text" name="apellido_materno" value="{{ old('apellido_materno') }}"
+                    class="w-full border rounded px-3 py-2">
+            </div>
+
+            <div class="mb-4">
+                <label for="email" class="block text-gray-700 font-semibold mb-1">Correo Electrónico</label>
+                <input id="email" type="email" name="email" value="{{ old('email') }}" required
+                    class="w-full border rounded px-3 py-2">
+            </div>
+
+            <div class="mb-4">
+                <label for="password" class="block text-gray-700 font-semibold mb-1">Contraseña</label>
+                <input id="password" type="password" name="password" required autocomplete="new-password"
+                    class="w-full border rounded px-3 py-2">
+            </div>
+
+            <div class="mb-4">
+                <label for="password-confirm" class="block text-gray-700 font-semibold mb-1">Confirmar Contraseña</label>
+                <input id="password-confirm" type="password" name="password_confirmation" required autocomplete="new-password"
+                    class="w-full border rounded px-3 py-2">
+            </div>
+
+            <div class="mb-4">
+                <label for="rol" class="block text-gray-700 font-semibold mb-1">Rol</label>
+                {{-- Aquí SÍ van los 5 roles, a diferencia del registro público que solo usa roles() --}}
+                <select id="rol" name="rol" required class="w-full border rounded px-3 py-2">
+                    @foreach(\App\Models\Usuarios::allRoles() as $key => $value)
+                        <option value="{{ $key }}" {{ old('rol') == $key ? 'selected' : '' }}>
+                            {{ $value }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="matricula" class="block text-gray-700 font-semibold mb-1">Matrícula</label>
+                <input id="matricula" type="text" name="matricula" value="{{ old('matricula') }}"
+                    class="w-full border rounded px-3 py-2">
+            </div>
+
+            <div class="mb-6">
+                <label for="telefono" class="block text-gray-700 font-semibold mb-1">Teléfono</label>
+                <input id="telefono" type="text" name="telefono" value="{{ old('telefono') }}"
+                    class="w-full border rounded px-3 py-2">
+            </div>
+
+            <div class="flex items-center justify-between">
+                <a href="{{ route('admin.usuarios.index') }}" class="text-gray-600 hover:text-gray-800">
+                    ← Volver al listado
+                </a>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Crear usuario
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 @endsection

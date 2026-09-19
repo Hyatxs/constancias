@@ -99,6 +99,7 @@ Route::middleware(['auth', 'password.confirm', 'admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::get('usuarios/create', [UsuariosAdminController::class, 'create'])->name('usuarios.index');
+        Route::get('usuarios', [UsuariosAdminController::class, 'index'])->name('usuarios.index');
+        Route::get('usuarios/create', [UsuariosAdminController::class, 'create'])->name('usuarios.create');
         Route::post('usuarios', [UsuariosAdminController::class, 'store'])->name('usuarios.store');
     });

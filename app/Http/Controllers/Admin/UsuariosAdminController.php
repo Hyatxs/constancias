@@ -11,14 +11,27 @@ use Illuminate\Validation\Rule;
 class UsuariosAdminController extends Controller
 {
     /**
+     * Lista todos los usuarios del sistema, sin importar su rol.
+     * orderBy(...) evita que el orden cambie de forma rara entre recargas.
+     * Si no hay usuarios todavía (base de datos recién migrada), $usuarios
+     * simplemente viene vacío y la vista muestra un mensaje, sin romperse.
+     */
+    public function index()
+    {
+        $usuarios = Usuarios::orderBy('rol')->orderBy('nombre')->get();
+
+        return view('admin.usuarios.index', compact('usuarios'));
+    }
+
+    /**
      * Muestra el formulario para crear un usuario con cualquier rol.
      * Ya llega protegido por el middleware 'admin' (ver routes/web.php),
      * así que aquí no hace falta revisar el rol otra vez.
      */
     public function create()
-{
-    return view('admin.usuarios.create');
-}
+    {
+        return view('admin.usuarios.create');
+    }
 
     /**
      * Valida y crea el usuario nuevo.
@@ -32,27 +45,27 @@ class UsuariosAdminController extends Controller
     {
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'max:255'],
-            'apellido_paterno' => ['required', 'string', 'max:255'],
-            'apellido_materno' => ['required', 'string', 'max:255'],
+            'apellido_paterno' => ['nullable', 'string', 'max:50'],
+            'apellido_materno' => ['nullable', 'string', 'max:50'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:usuarios'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'rol' => ['required', Rule::in(array_keys(Usuarios::allRoles()))],
-            'matricula' => ['required', 'string', 'max:50'],
-            'telefono' => ['required', 'string', 'max:15'],
+            'matricula' => ['nullable', 'string', 'max:25'],
+            'telefono' => ['nullable', 'string', 'max:15'],
         ]);
 
         Usuarios::create([
             'nombre' => $validated['nombre'],
-            'apellido_paterno' => $validated['apellido_paterno'],
-            'apellido_materno' => $validated['apellido_materno'],
+            'apellido_paterno' => $validated['apellido_paterno'] ?? null,
+            'apellido_materno' => $validated['apellido_materno'] ?? null,
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'rol' => $validated['rol'],
-            'matricula' => $validated['matricula'],
-            'telefono' => $validated['telefono'],
+            'matricula' => $validated['matricula'] ?? null,
+            'telefono' => $validated['telefono'] ?? null,
         ]);
 
-       return redirect()->route('admin.usuarios.index')
-    ->with('status', 'Usuario creado correctamente.');
+        return redirect()->route('admin.usuarios.index')
+            ->with('status', 'Usuario creado correctamente.');
     }
 }
