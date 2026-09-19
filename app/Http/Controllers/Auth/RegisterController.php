@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class RegisterController extends Controller
 {
@@ -47,7 +48,7 @@ class RegisterController extends Controller
             'apellido_materno' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:usuarios'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'rol' => ['required', 'string', 'max:50'],
+            'rol' => ['required', Rule::in(array_keys(Usuarios::roles()))],
             'matricula' => ['required', 'string', 'max:50'],
             'telefono' => ['required', 'string', 'max:15'],
         ]);

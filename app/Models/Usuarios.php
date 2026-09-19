@@ -65,4 +65,15 @@ class Usuarios extends Authenticatable
             
         ];
     }
+
+        public static function allRoles()
+    {
+        return [
+            'Administrador' => 'Administrador',
+            'Coordinador' => 'Coordinador',
+            'Director' => 'Director',
+            'Maestro' => 'Maestro',
+            'Estudiante' => 'Estudiante',
+        ];
+    }
 }

@@ -9,7 +9,8 @@ use App\Http\Controllers\EventoHorarioController;
 use App\Http\Controllers\InscripcionController;
 use App\Http\Controllers\EvidenciasController;
 use App\Http\Controllers\MisEventosController;
-
+use App\Http\Controllers\Auth\ConfirmPasswordController;
+use App\Http\Controllers\Admin\UsuariosAdminController;
 
 
 Route::get('/', function () {
@@ -90,3 +91,14 @@ Route::get('/html-constancia', function () {
 
     return view('templates.constancia.constancia', $data);
 });
+
+Route::get('password/confirm', [ConfirmPasswordController::class, 'showConfirmForm'])->name('password.confirm');
+Route::post('password/confirm', [ConfirmPasswordController::class, 'confirm']);
+
+Route::middleware(['auth', 'password.confirm', 'admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('usuarios/create', [UsuariosAdminController::class, 'create'])->name('usuarios.index');
+        Route::post('usuarios', [UsuariosAdminController::class, 'store'])->name('usuarios.store');
+    });
