@@ -12,9 +12,8 @@ class ModuloSeeder extends Seeder
         $modulos = [
             // Estudiante
             ['nombre' => 'Inicio',        'enlace' => 'home',            'icono' => 'fas fa-home',        'rol' => 'Estudiante',    'estatus' => 'Activo', 'orden' => 1],
-            ['nombre' => 'Eventos',       'enlace' => 'eventos',         'icono' => 'fas fa-calendar',    'rol' => 'Estudiante',    'estatus' => 'Activo', 'orden' => 2],
-            ['nombre' => 'Mis Eventos',   'enlace' => 'mis-eventos',     'icono' => 'fas fa-list',        'rol' => 'Estudiante',    'estatus' => 'Activo', 'orden' => 3],
-            ['nombre' => 'Inscripciones', 'enlace' => 'inscripciones',   'icono' => 'fas fa-file-alt',    'rol' => 'Estudiante',    'estatus' => 'Activo', 'orden' => 4],
+            ['nombre' => 'Mis Eventos',   'enlace' => 'mis-eventos',     'icono' => 'fas fa-list',        'rol' => 'Estudiante',    'estatus' => 'Activo', 'orden' => 2],
+            ['nombre' => 'Inscripciones', 'enlace' => 'inscripciones',   'icono' => 'fas fa-file-alt',    'rol' => 'Estudiante',    'estatus' => 'Activo', 'orden' => 3],
 
             // Director
             ['nombre' => 'Inicio',             'enlace' => 'home',               'icono' => 'fas fa-home',    'rol' => 'Director', 'estatus' => 'Activo', 'orden' => 1],
@@ -36,8 +35,7 @@ class ModuloSeeder extends Seeder
 
             // Maestro
             ['nombre' => 'Inicio',     'enlace' => 'home',       'icono' => 'fas fa-home',     'rol' => 'Maestro', 'estatus' => 'Activo', 'orden' => 1],
-            ['nombre' => 'Eventos',    'enlace' => 'eventos',    'icono' => 'fas fa-calendar', 'rol' => 'Maestro', 'estatus' => 'Activo', 'orden' => 2],
-            ['nombre' => 'Evidencias', 'enlace' => 'evidencias', 'icono' => 'fas fa-camera',   'rol' => 'Maestro', 'estatus' => 'Activo', 'orden' => 3],
+            ['nombre' => 'Evidencias', 'enlace' => 'evidencias', 'icono' => 'fas fa-camera',   'rol' => 'Maestro', 'estatus' => 'Activo', 'orden' => 2],
         ];
 
         foreach ($modulos as $modulo) {

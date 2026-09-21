@@ -12,7 +12,13 @@ use Carbon\Carbon;
 
 class EvidenciasController extends Controller
 {
-    // Otros métodos permanecen iguales...
+    public function __construct()
+    {
+        $this->middleware('auth');
+        // Estudiante no gestiona evidencias, solo Maestro (quien impartió el evento) y roles administrativos.
+        $this->middleware('role:Maestro,Coordinador,Director,Administrador')
+            ->only(['create', 'store', 'edit', 'update', 'destroy']);
+    }
 
     public function index()
     {

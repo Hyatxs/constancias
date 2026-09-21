@@ -34,6 +34,17 @@
                 </select>
             </div>
             <div class="mb-4">
+                <label for="id_maestro" class="block text-gray-700 text-sm font-bold mb-2">Profesor asignado (opcional):</label>
+                <select name="id_maestro" id="id_maestro" class="form-control border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="">Sin asignar</option>
+                    @foreach ($maestros as $maestro)
+                        <option value="{{ $maestro->id }}" {{ old('id_maestro') == $maestro->id ? 'selected' : '' }}>
+                            {{ $maestro->nombre }} {{ $maestro->apellido_paterno }} {{ $maestro->apellido_materno }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="mb-4">
                 <label for="id_evento" class="block text-gray-700 text-sm font-bold mb-2">Tipo de Evento:</label>
                 <select name="id_tipo_evento" id="id_evento" required class="form-control border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     <option value="">Seleccione un Tipo de Evento</option>

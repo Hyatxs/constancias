@@ -59,11 +59,13 @@ class MisEventosController extends Controller
             return redirect()->route('mis_eventos.index')->with('error', 'No estás inscrito en este evento.');
         }
 
+        $usuario = Auth::user();
+
         $data = [
             'nombre_evento' => $evento->nombre_evento,
             'fecha_inicio' => $evento->fecha_inicio,
             'fecha_fin' => $evento->fecha_fin,
-            'nombre' => Auth::user()->name,
+            'nombre' => trim("{$usuario->nombre} {$usuario->apellido_paterno} {$usuario->apellido_materno}"),
             'folio' => $evento->folio,
             'duracion_horas' => $evento->duracion_horas,
             'modalidad' => $evento->modalidad,
@@ -85,7 +87,6 @@ class MisEventosController extends Controller
             'nombre_evento' => $evento->nombre_evento,
             'fecha_inicio' => $evento->fecha_inicio,
             'fecha_fin' => $evento->fecha_fin,
-            'nombre' => Auth::user()->name,
             'folio' => $evento->folio,
             'duracion_horas' => $evento->duracion_horas,
             'modalidad' => $evento->modalidad,
@@ -107,11 +108,13 @@ class MisEventosController extends Controller
     public function generarConstancia($eventoId)
     {
         $evento = Eventos::findOrFail($eventoId);
+        $usuario = Auth::user();
+
         $data = [
             'nombre_evento' => $evento->nombre_evento,
             'fecha_inicio' => $evento->fecha_inicio,
             'fecha_fin' => $evento->fecha_fin,
-            'nombre' => Auth::user()->name, // Asegúrate de que Auth está configurado
+            'nombre' => trim("{$usuario->nombre} {$usuario->apellido_paterno} {$usuario->apellido_materno}"),
             'folio' => $evento->folio,
             'duracion_horas' => $evento->duracion_horas,
             'modalidad' => $evento->modalidad,

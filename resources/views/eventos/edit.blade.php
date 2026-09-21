@@ -14,6 +14,18 @@
             </div>
 
             <div class="mb-4">
+                <label for="id_maestro" class="block text-gray-700 font-bold mb-2">Profesor asignado (opcional):</label>
+                <select name="id_maestro" id="id_maestro" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="">Sin asignar</option>
+                    @foreach ($maestros as $maestro)
+                        <option value="{{ $maestro->id }}" {{ $evento->id_maestro == $maestro->id ? 'selected' : '' }}>
+                            {{ $maestro->nombre }} {{ $maestro->apellido_paterno }} {{ $maestro->apellido_materno }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="mb-4">
                 <label for="fecha_inicio" class="block text-gray-700 font-bold mb-2">Fecha de Inicio:</label>
                 <input type="date" name="fecha_inicio" id="fecha_inicio" value="{{ $evento->fecha_inicio }}" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
             </div>

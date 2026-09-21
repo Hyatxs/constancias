@@ -8,9 +8,11 @@
 @section('content')
 <div class="container mx-auto px-4">
     <h1 class="text-2xl font-bold my-6 text-center">Lista de Eventos</h1>
-    <div class="flex justify-end mb-4">
-        <a href="{{ route('eventos.create') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Crear Nuevo Evento</a>
-    </div>
+    @if (in_array(auth()->user()->rol, ['Coordinador', 'Director', 'Administrador']))
+        <div class="flex justify-end mb-4">
+            <a href="{{ route('eventos.create') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Crear Nuevo Evento</a>
+        </div>
+    @endif
     <div class="overflow-x-auto">
         <table class="table-auto w-full mt-4" id="eventosTable">
             <thead>
@@ -36,16 +38,18 @@
                             <a href="{{ route('eventos.show', $evento->id_evento) }}" class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <a href="{{ route('eventos.edit', $evento->id_evento) }}" class="w-4 mr-2 transform hover:text-yellow-500 hover:scale-110">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <form action="{{ route('eventos.destroy', $evento->id_evento) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="w-4 transform hover:text-red-500 hover:scale-110">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </form>
+                            @if (in_array(auth()->user()->rol, ['Coordinador', 'Director', 'Administrador']))
+                                <a href="{{ route('eventos.edit', $evento->id_evento) }}" class="w-4 mr-2 transform hover:text-yellow-500 hover:scale-110">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{ route('eventos.destroy', $evento->id_evento) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="w-4 transform hover:text-red-500 hover:scale-110">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            @endif
                         </div>
                     </td>
                 </tr>

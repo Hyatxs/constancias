@@ -11,12 +11,16 @@ use App\Models\EventoHorario;
 use App\Models\Inscripcion;
 use Illuminate\Support\Facades\Log;
 
-
 class EventosController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
+
+        // Solo estos roles pueden crear, editar o borrar eventos.
+        // index() y show() se quedan abiertos a cualquier usuario logueado (todos pueden ver).
+        $this->middleware('role:Coordinador,Director,Administrador')
+            ->only(['create', 'store', 'edit', 'update', 'destroy']);
     }
 
     public function index()
@@ -27,12 +31,13 @@ class EventosController extends Controller
 
     public function create()
     {
-        $directores = Usuarios::where('rol', 'Director')->get(); // Asume que tienes un campo 'rol' en la tabla de usuarios
+        $directores = Usuarios::where('rol', 'Director')->get();
+        $maestros = Usuarios::where('rol', 'Maestro')->get();
         $tipos_eventos = TipoEvento::all();
         $modalidades = ['Virtual', 'Presencial'];
         $estatus = ['Aceptado', 'Pendiente', 'Rechazado'];
 
-        return view('eventos.create', compact('directores', 'modalidades', 'estatus', 'tipos_eventos'));
+        return view('eventos.create', compact('directores', 'maestros', 'modalidades', 'estatus', 'tipos_eventos'));
     }
 
     public function store(Request $request)
@@ -40,6 +45,7 @@ class EventosController extends Controller
         $validated = $request->validate([
             'id_tipo_evento' => 'required|integer|exists:tipos_eventos,id_tipo_evento',
             'id_director' => 'required|integer|exists:usuarios,id',
+            'id_maestro' => 'nullable|integer|exists:usuarios,id',
             'nombre_evento' => 'required|string|max:100',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
@@ -62,33 +68,35 @@ class EventosController extends Controller
     public function show($id)
     {
         $evento = Eventos::findOrFail($id);
-
-        $horarios = EventoHorario::where('id_evento', $evento->id_evento)->get(); // Obtener los horarios asociados al evento
+        $horarios = EventoHorario::where('id_evento', $evento->id_evento)->get();
 
         $inscripcion = Inscripcion::where('id_usuario', Auth::id())
             ->where('id_evento', $evento->id_evento)
             ->first();
 
-        return view('eventos.show', compact('evento', 'horarios'));
+        // $inscripcion faltaba en el compact() original, por eso la vista nunca sabía
+        // si el usuario actual ya estaba inscrito o no.
+        return view('eventos.show', compact('evento', 'horarios', 'inscripcion'));
     }
 
     public function edit($id)
     {
         $evento = Eventos::findOrFail($id);
         $directores = Usuarios::where('rol', 'Director')->get();
+        $maestros = Usuarios::where('rol', 'Maestro')->get();
         $tipos_eventos = TipoEvento::all();
         $modalidades = ['Virtual', 'Presencial'];
         $estatus = ['Aceptado', 'Pendiente', 'Rechazado'];
 
-        return view('eventos.edit', compact('evento', 'directores', 'modalidades', 'estatus', 'tipos_eventos'));
+        return view('eventos.edit', compact('evento', 'directores', 'maestros', 'modalidades', 'estatus', 'tipos_eventos'));
     }
 
     public function update(Request $request, $id)
     {
-
         try {
             $validated = $request->validate([
                 'nombre_evento' => 'required|string|max:100',
+                'id_maestro' => 'nullable|integer|exists:usuarios,id',
                 'fecha_inicio' => 'required|date',
                 'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
                 'descripcion' => 'nullable|string',
@@ -100,27 +108,24 @@ class EventosController extends Controller
             ]);
             $evento = Eventos::findOrFail($id);
 
-
             $evento->update($validated);
-
 
             return redirect()->route('eventos.show', $evento->id_evento)->with('success', 'Evento actualizado exitosamente');
         } catch (\Exception $e) {
-            dd($e);
             return back()->withErrors('Error al actualizar el evento: ' . $e->getMessage());
         }
     }
 
     public function indexDirector()
     {
-        $eventos = Eventos::where('estatus', 'Pendiente')->get(); // Solo muestra eventos pendientes
+        $eventos = Eventos::where('estatus', 'Pendiente')->get();
         return view('eventos_director.index', compact('eventos'));
     }
 
     public function showDirector($id)
     {
         $evento = Eventos::findOrFail($id);
-        $horarios = EventoHorario::where('id_evento', $evento->id_evento)->get(); // Obtener los horarios asociados al evento
+        $horarios = EventoHorario::where('id_evento', $evento->id_evento)->get();
 
         return view('eventos_director.show', compact('evento', 'horarios'));
     }
@@ -143,24 +148,15 @@ class EventosController extends Controller
         return redirect()->route('eventos-director.show', $evento->id_evento)->with('success', 'Evento rechazado exitosamente');
     }
 
-
     public function historialDirector()
     {
-        $eventos = Eventos::whereIn('estatus', ['Aceptado', 'Rechazado'])->get(); // Solo muestra eventos aceptados o rechazados
+        $eventos = Eventos::whereIn('estatus', ['Aceptado', 'Rechazado'])->get();
         return view('historial_director.index', compact('eventos'));
     }
-
-
 
     public function destroy(Eventos $evento)
     {
         $evento->delete();
         return redirect()->route('eventos.index')->with('success', 'Evento eliminado exitosamente');
     }
-
-
-
-
 }
-
-

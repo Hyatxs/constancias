@@ -51,7 +51,7 @@ Route::middleware(['auth'])->group(function () {
 Route::resource('tipos-eventos', TipoEventoController::class);
 
 Route::resource('horarios', EventoHorarioController::class);
-Route::get('eventos/{id_evento}/asignar-horario', [EventoHorarioController::class, 'createFromEvent'])->name('eventos.assignSchedule');
+Route::get('eventos/{id_evento}/asignar-horario', [EventoHorarioController::class, 'create'])->name('eventos.assignSchedule');
 Route::get('horarios/{horario}/edit', [EventoHorarioController::class, 'edit'])->name('horarios.edit');
 // Route::put('horarios/{horario}', [EventoHorarioController::class, 'update'])->name('horarios.update');
 
@@ -59,7 +59,7 @@ Route::get('horarios/{horario}/edit', [EventoHorarioController::class, 'edit'])-
 
 Route::resource('inscripciones', InscripcionController::class);
 Route::get('/inscripciones', [InscripcionController::class, 'index'])->name('inscripciones.index');
-// Route::get('/inscripciones/create/{id_evento}', [InscripcionController::class, 'create'])->name('inscripciones.create');
+Route::get('/inscripciones/create/{id_evento}', [InscripcionController::class, 'create'])->name('inscripciones.create');
 Route::post('/inscripciones', [InscripcionController::class, 'store'])->name('inscripciones.store');
 // Route::get('/inscripciones/{id}', [InscripcionController::class, 'show'])->name('inscripciones.show');
 Route::resource('evidencias', EvidenciasController::class);

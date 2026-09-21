@@ -40,7 +40,22 @@
 
     <form method="POST" action="{{ route('horarios.store') }}" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         @csrf
-        <input type="hidden" name="id_evento" value="{{ $id_evento }}">
+
+        @if ($id_evento)
+            {{-- Ya sabemos el evento (llegamos desde "Asignar Horario" en el evento), no hace falta preguntarlo --}}
+            <input type="hidden" name="id_evento" value="{{ $id_evento }}">
+        @else
+            {{-- Se entró desde el menú genérico "Horarios", sin evento preseleccionado: se pregunta --}}
+            <div class="mb-4">
+                <label for="id_evento" class="block text-gray-700 text-sm font-bold mb-2">Evento</label>
+                <select name="id_evento" id="id_evento" required class="form-control border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="">Seleccione un evento</option>
+                    @foreach ($eventos as $eventoOpcion)
+                        <option value="{{ $eventoOpcion->id_evento }}">{{ $eventoOpcion->nombre_evento }}</option>
+                    @endforeach
+                </select>
+            </div>
+        @endif
 
         <div class="mb-4">
             <label for="dia" class="block text-gray-700 text-sm font-bold mb-2">Día</label>
@@ -69,7 +84,11 @@
         </div>
 
         <div class="flex items-center justify-between">
-            <a href="{{ route('eventos.show', ['evento' => $id_evento]) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">Volver</a>
+            @if ($id_evento)
+                <a href="{{ route('eventos.show', ['evento' => $id_evento]) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">Volver</a>
+            @else
+                <a href="{{ route('horarios.index') }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">Volver</a>
+            @endif
 
             <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Crear</button>
         </div>
