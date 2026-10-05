@@ -37,8 +37,10 @@ class ModuloSeeder extends Seeder
             ['nombre' => 'Evidencias',  'enlace' => 'evidencias', 'icono' => 'fas fa-camera',   'rol' => 'Coordinador', 'estatus' => 'Activo', 'orden' => 4],
 
             // Maestro
-            ['nombre' => 'Inicio',     'enlace' => 'home',       'icono' => 'fas fa-home',     'rol' => 'Maestro', 'estatus' => 'Activo', 'orden' => 1],
-            ['nombre' => 'Evidencias', 'enlace' => 'evidencias', 'icono' => 'fas fa-camera',   'rol' => 'Maestro', 'estatus' => 'Activo', 'orden' => 2],
+['nombre' => 'Inicio',     'enlace' => 'home',       'icono' => 'fas fa-home',      'rol' => 'Maestro', 'estatus' => 'Activo', 'orden' => 1],
+['nombre' => 'Evidencias', 'enlace' => 'evidencias', 'icono' => 'fas fa-camera',    'rol' => 'Maestro', 'estatus' => 'Activo', 'orden' => 2],
+['nombre' => 'Asistencia', 'enlace' => 'asistencia', 'icono' => 'fas fa-user-check','rol' => 'Maestro', 'estatus' => 'Activo', 'orden' => 3],
+ 
         ];
 
         foreach ($modulos as $modulo) {
