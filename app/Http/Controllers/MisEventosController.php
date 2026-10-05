@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Inscripcion;
 use App\Models\Eventos;
+use App\Models\Evidencias;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Usuarios;
@@ -42,6 +43,12 @@ class MisEventosController extends Controller
             return $inscripcion->estatus === 'Finalizado';
         });
 
+        // Para cada inscripción finalizada, se calcula si la constancia ya está disponible
+        // y, si no, por qué no — así la vista puede mostrarlo sin volver a consultar nada.
+        foreach ($inscripciones_finalizadas as $inscripcion) {
+            $inscripcion->motivo_constancia_bloqueada = $this->motivoConstanciaBloqueada($inscripcion);
+        }
+
         return view('mis_eventos.index', compact('inscripciones_en_proceso', 'inscripciones_finalizadas'));
     }
 
@@ -49,16 +56,17 @@ class MisEventosController extends Controller
 
     public function descargarConstancia($id_evento)
     {
-        $evento = Eventos::findOrFail($id_evento);
-
-        $inscripcion = Inscripcion::where('id_evento', $id_evento)
-                                  ->where('id_usuario', Auth::id())
-                                  ->first();
+        $inscripcion = $this->inscripcionDelUsuario($id_evento);
 
         if (!$inscripcion) {
             return redirect()->route('mis_eventos.index')->with('error', 'No estás inscrito en este evento.');
         }
 
+        if ($motivo = $this->motivoConstanciaBloqueada($inscripcion)) {
+            return redirect()->route('mis_eventos.index')->with('error', $motivo);
+        }
+
+        $evento = $inscripcion->evento;
         $usuario = Auth::user();
 
         $data = [
@@ -78,10 +86,18 @@ class MisEventosController extends Controller
     }
     public function verConstancia($eventoId)
     {
-        // Obtén el evento y los datos necesarios
-        $evento = Eventos::findOrFail($eventoId);
-        $usuario = Auth::user();
+        $inscripcion = $this->inscripcionDelUsuario($eventoId);
 
+        if (!$inscripcion) {
+            return redirect()->route('mis_eventos.index')->with('error', 'No estás inscrito en este evento.');
+        }
+
+        if ($motivo = $this->motivoConstanciaBloqueada($inscripcion)) {
+            return redirect()->route('mis_eventos.index')->with('error', $motivo);
+        }
+
+        $evento = $inscripcion->evento;
+        $usuario = Auth::user();
 
         $data = [
             'nombre_evento' => $evento->nombre_evento,
@@ -90,24 +106,32 @@ class MisEventosController extends Controller
             'folio' => $evento->folio,
             'duracion_horas' => $evento->duracion_horas,
             'modalidad' => $evento->modalidad,
-            // Otros datos relevantes
             'nombre' => $usuario->nombre,
             'apellido_paterno' => $usuario->apellido_paterno,
             'apellido_materno' => $usuario->apellido_materno,
-
         ];
-    
+
         // Genera el PDF
         $pdf = PDF::loadView('templates.constancia.constancia', $data)->setPaper('a4','landscape');
-    
+
         // Mostrar el PDF en el navegador
         return $pdf->stream('constancia_evento_' . '.pdf');
     }
-    
+
 
     public function generarConstancia($eventoId)
     {
-        $evento = Eventos::findOrFail($eventoId);
+        $inscripcion = $this->inscripcionDelUsuario($eventoId);
+
+        if (!$inscripcion) {
+            return redirect()->route('mis_eventos.index')->with('error', 'No estás inscrito en este evento.');
+        }
+
+        if ($motivo = $this->motivoConstanciaBloqueada($inscripcion)) {
+            return redirect()->route('mis_eventos.index')->with('error', $motivo);
+        }
+
+        $evento = $inscripcion->evento;
         $usuario = Auth::user();
 
         $data = [
@@ -134,5 +158,36 @@ class MisEventosController extends Controller
         $pdf->save($filePath);
 
         return response()->download($filePath);
+    }
+
+    private function inscripcionDelUsuario($id_evento): ?Inscripcion
+    {
+        return Inscripcion::with('evento')
+            ->where('id_evento', $id_evento)
+            ->where('id_usuario', Auth::id())
+            ->first();
+    }
+
+    /**
+     * Devuelve el motivo por el que la constancia NO está disponible todavía, o null
+     * si ya se puede ver/descargar. Se necesitan las dos cosas:
+     *   1) La evidencia del evento fue Aprobada por el Director asignado.
+     *   2) El propio alumno fue marcado como "Asistió" por el Maestro asignado.
+     */
+    private function motivoConstanciaBloqueada(Inscripcion $inscripcion): ?string
+    {
+        $evidenciaAprobada = Evidencias::where('id_evento', $inscripcion->id_evento)
+            ->where('estatus', 'Aprobada')
+            ->exists();
+
+        if (!$evidenciaAprobada) {
+            return 'Tu constancia todavía no está disponible: el Director aún no aprueba la evidencia de este evento.';
+        }
+
+        if ($inscripcion->asistencia !== 'Asistió') {
+            return 'Tu constancia todavía no está disponible: tu profesor aún no confirma tu asistencia a este evento.';
+        }
+
+        return null;
     }
 }

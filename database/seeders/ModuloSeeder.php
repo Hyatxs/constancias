@@ -19,6 +19,8 @@ class ModuloSeeder extends Seeder
             ['nombre' => 'Inicio',             'enlace' => 'home',               'icono' => 'fas fa-home',    'rol' => 'Director', 'estatus' => 'Activo', 'orden' => 1],
             ['nombre' => 'Eventos por Aprobar','enlace' => 'eventos-director',   'icono' => 'fas fa-check',   'rol' => 'Director', 'estatus' => 'Activo', 'orden' => 2],
             ['nombre' => 'Historial',          'enlace' => 'historial-director', 'icono' => 'fas fa-history', 'rol' => 'Director', 'estatus' => 'Activo', 'orden' => 3],
+            ['nombre' => 'Eventos',            'enlace' => 'eventos',            'icono' => 'fas fa-calendar','rol' => 'Director', 'estatus' => 'Activo', 'orden' => 4],
+            ['nombre' => 'Evidencias',         'enlace' => 'evidencias',         'icono' => 'fas fa-camera',  'rol' => 'Director', 'estatus' => 'Activo', 'orden' => 5],
 
             // Administrador
             ['nombre' => 'Inicio',         'enlace' => 'home',          'icono' => 'fas fa-home',      'rol' => 'Administrador', 'estatus' => 'Activo', 'orden' => 1],
@@ -29,9 +31,10 @@ class ModuloSeeder extends Seeder
             ['nombre' => 'Crear Usuario',  'enlace' => 'admin.usuarios','icono' => 'fas fa-user-plus', 'rol' => 'Administrador', 'estatus' => 'Activo', 'orden' => 6],
 
             // Coordinador
-            ['nombre' => 'Inicio',   'enlace' => 'home',     'icono' => 'fas fa-home',     'rol' => 'Coordinador', 'estatus' => 'Activo', 'orden' => 1],
-            ['nombre' => 'Eventos',  'enlace' => 'eventos',  'icono' => 'fas fa-calendar', 'rol' => 'Coordinador', 'estatus' => 'Activo', 'orden' => 2],
-            ['nombre' => 'Horarios', 'enlace' => 'horarios', 'icono' => 'fas fa-clock',    'rol' => 'Coordinador', 'estatus' => 'Activo', 'orden' => 3],
+            ['nombre' => 'Inicio',      'enlace' => 'home',       'icono' => 'fas fa-home',     'rol' => 'Coordinador', 'estatus' => 'Activo', 'orden' => 1],
+            ['nombre' => 'Eventos',     'enlace' => 'eventos',    'icono' => 'fas fa-calendar', 'rol' => 'Coordinador', 'estatus' => 'Activo', 'orden' => 2],
+            ['nombre' => 'Horarios',    'enlace' => 'horarios',   'icono' => 'fas fa-clock',    'rol' => 'Coordinador', 'estatus' => 'Activo', 'orden' => 3],
+            ['nombre' => 'Evidencias',  'enlace' => 'evidencias', 'icono' => 'fas fa-camera',   'rol' => 'Coordinador', 'estatus' => 'Activo', 'orden' => 4],
 
             // Maestro
             ['nombre' => 'Inicio',     'enlace' => 'home',       'icono' => 'fas fa-home',     'rol' => 'Maestro', 'estatus' => 'Activo', 'orden' => 1],

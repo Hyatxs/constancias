@@ -52,9 +52,9 @@ class Usuarios extends Authenticatable
     }
 
     public function inscripciones()
-    {
-        return $this->hasMany(Inscripcion::class, 'id_usuario', 'id_usuario');
-    }
+{
+    return $this->hasMany(Inscripcion::class, 'id_usuario', 'id');
+}
 
     public static function roles()
     {

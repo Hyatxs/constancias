@@ -11,7 +11,7 @@
 
     @if ($evidencia->archivo)
         <div class="flex justify-center">
-            <iframe src="{{ Storage::url($evidencia->archivo) }}" width="100%" height="600px" title="Vista del archivo PDF"></iframe>
+            <iframe src="{{ Storage::disk('public')->url($evidencia->archivo) }}" width="100%" height="600px" title="Vista del archivo PDF"></iframe>
         </div>
     @else
         <p class="text-red-500">No hay archivo disponible para mostrar.</p>

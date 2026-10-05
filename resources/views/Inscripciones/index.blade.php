@@ -11,6 +11,12 @@
         </div>
     @endif
 
+    @if (session('error'))
+        <div class="bg-red-500 text-white p-4 rounded mb-4">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse ($eventos as $evento)
             <div class="bg-white rounded-lg shadow-md p-4">
@@ -18,7 +24,12 @@
                 <p>{{ $evento->descripcion }}</p>
                 <p class="mt-2"><strong>Fecha:</strong> {{ $evento->fecha_inicio }} - {{ $evento->fecha_fin }}</p>
                 <p class="mt-2"><strong>Modalidad:</strong> {{ $evento->modalidad }}</p>
-                <a href="{{ route('inscripciones.create', $evento->id_evento) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 inline-block">Inscribirse</a>
+
+                @if (in_array($evento->id_evento, $inscritos))
+                    <span class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded mt-4 inline-block">Ya estás inscrito</span>
+                @else
+                    <a href="{{ route('inscripciones.create', $evento->id_evento) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 inline-block">Inscribirse</a>
+                @endif
             </div>
         @empty
             <p class="text-center">No hay eventos disponibles en este momento.</p>

@@ -11,7 +11,7 @@ use App\Http\Controllers\EvidenciasController;
 use App\Http\Controllers\MisEventosController;
 use App\Http\Controllers\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Admin\UsuariosAdminController;
-
+use App\Http\Controllers\AsistenciaController;
 
 Route::get('/', function () {
     return redirect('/home');
@@ -63,6 +63,18 @@ Route::get('/inscripciones/create/{id_evento}', [InscripcionController::class, '
 Route::post('/inscripciones', [InscripcionController::class, 'store'])->name('inscripciones.store');
 // Route::get('/inscripciones/{id}', [InscripcionController::class, 'show'])->name('inscripciones.show');
 Route::resource('evidencias', EvidenciasController::class);
+
+Route::middleware(['auth', 'role:Director'])->group(function () {
+    Route::post('evidencias/{id}/aprobar', [App\Http\Controllers\EvidenciasController::class, 'aprobar'])->name('evidencias.aprobar');
+    Route::post('evidencias/{id}/rechazar', [App\Http\Controllers\EvidenciasController::class, 'rechazar'])->name('evidencias.rechazar');
+});
+
+Route::middleware(['auth', 'role:Maestro'])->prefix('asistencia')->name('asistencia.')->group(function () {
+    Route::get('/', [AsistenciaController::class, 'index'])->name('index');
+    Route::get('/{id_evento}', [AsistenciaController::class, 'show'])->name('show');
+    Route::post('/{id_inscripcion}/marcar', [AsistenciaController::class, 'marcar'])->name('marcar');
+});
+ 
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/mis-eventos', [MisEventosController::class, 'index'])->name('mis-eventos.index');

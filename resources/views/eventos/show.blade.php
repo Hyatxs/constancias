@@ -10,6 +10,19 @@
                 <p class="mt-2">{{ $evento->nombre_evento }}</p>
             </div>
             <div class="mb-4">
+                <strong class="text-gray-700">Profesor asignado:</strong>
+                @php
+                    $maestroAsignado = $evento->id_maestro ? \App\Models\Usuarios::find($evento->id_maestro) : null;
+                @endphp
+                <p class="mt-2">
+                    @if ($maestroAsignado)
+                        {{ $maestroAsignado->nombre }} {{ $maestroAsignado->apellido_paterno }} {{ $maestroAsignado->apellido_materno }}
+                    @else
+                        <span class="text-red-600">Sin asignar</span>
+                    @endif
+                </p>
+            </div>
+            <div class="mb-4">
                 <strong class="text-gray-700">Fecha de Inicio:</strong>
                 <p class="mt-2">{{ $evento->fecha_inicio }}</p>
             </div>

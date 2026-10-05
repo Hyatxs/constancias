@@ -13,6 +13,12 @@ use Illuminate\Support\Facades\Log;
 
 class EventosController extends Controller
 {
+    // Si se edita alguno de estos campos en un evento ya Aceptado, hay que
+    // volver a pedirle al Director que lo revise, porque son los datos que él aprobó.
+    private const CAMPOS_QUE_REQUIEREN_NUEVA_APROBACION = [
+        'nombre_evento', 'fecha_inicio', 'fecha_fin', 'duracion_horas', 'modalidad',
+    ];
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -25,7 +31,12 @@ class EventosController extends Controller
 
     public function index()
     {
-        $eventos = Eventos::all();
+        // Un Maestro solo debe ver los eventos que tiene asignados.
+        // Coordinador/Director/Administrador siguen viendo todos, para poder gestionarlos.
+        $eventos = Auth::user()->rol === 'Maestro'
+            ? Eventos::where('id_maestro', Auth::id())->get()
+            : Eventos::all();
+
         return view('eventos.index', compact('eventos'));
     }
 
@@ -45,7 +56,7 @@ class EventosController extends Controller
         $validated = $request->validate([
             'id_tipo_evento' => 'required|integer|exists:tipos_eventos,id_tipo_evento',
             'id_director' => 'required|integer|exists:usuarios,id',
-            'id_maestro' => 'nullable|integer|exists:usuarios,id',
+            'id_maestro' => 'required|integer|exists:usuarios,id',
             'nombre_evento' => 'required|string|max:100',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
@@ -55,13 +66,15 @@ class EventosController extends Controller
             'folio' => 'required|string|max:5',
             'observaciones' => 'nullable|string',
             'academia' => 'required|string|max:100',
+        ], [
+            'id_maestro.required' => 'No puedes avanzar sin asignar un profesor a este evento.',
         ]);
 
         try {
             $evento = Eventos::create($validated + ['id_creador' => Auth::id()]);
             return redirect()->route('eventos.index')->with('success', 'Evento creado exitosamente');
         } catch (\Exception $e) {
-            return back()->withErrors('Error al crear el evento: ' . $e->getMessage());
+            return back()->withInput()->withErrors('Error al crear el evento: ' . $e->getMessage());
         }
     }
 
@@ -74,8 +87,6 @@ class EventosController extends Controller
             ->where('id_evento', $evento->id_evento)
             ->first();
 
-        // $inscripcion faltaba en el compact() original, por eso la vista nunca sabía
-        // si el usuario actual ya estaba inscrito o no.
         return view('eventos.show', compact('evento', 'horarios', 'inscripcion'));
     }
 
@@ -96,7 +107,7 @@ class EventosController extends Controller
         try {
             $validated = $request->validate([
                 'nombre_evento' => 'required|string|max:100',
-                'id_maestro' => 'nullable|integer|exists:usuarios,id',
+                'id_maestro' => 'required|integer|exists:usuarios,id',
                 'fecha_inicio' => 'required|date',
                 'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
                 'descripcion' => 'nullable|string',
@@ -105,14 +116,32 @@ class EventosController extends Controller
                 'folio' => 'required|string|max:5',
                 'observaciones' => 'nullable|string',
                 'academia' => 'required|string|max:100',
+            ], [
+                'id_maestro.required' => 'No puedes avanzar sin asignar un profesor a este evento.',
             ]);
             $evento = Eventos::findOrFail($id);
 
+            // Si el evento ya estaba Aceptado, alguien distinto al Director asignado
+            // está editando, y cambió algo que el Director había aprobado, regresa a Pendiente.
+            if (
+                $evento->estatus === 'Aceptado'
+                && Auth::id() !== $evento->id_director
+                && $this->cambioAlgoQueRequiereNuevaAprobacion($evento, $validated)
+            ) {
+                $validated['estatus'] = 'Pendiente';
+            }
+
             $evento->update($validated);
 
-            return redirect()->route('eventos.show', $evento->id_evento)->with('success', 'Evento actualizado exitosamente');
+            $mensaje = ($validated['estatus'] ?? null) === 'Pendiente'
+                ? 'Evento actualizado. Como se modificaron datos ya aprobados, el evento vuelve a esperar la revisión del Director.'
+                : 'Evento actualizado exitosamente';
+
+            return redirect()->route('eventos.show', $evento->id_evento)->with('success', $mensaje);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
         } catch (\Exception $e) {
-            return back()->withErrors('Error al actualizar el evento: ' . $e->getMessage());
+            return back()->withInput()->withErrors('Error al actualizar el evento: ' . $e->getMessage());
         }
     }
 
@@ -158,5 +187,17 @@ class EventosController extends Controller
     {
         $evento->delete();
         return redirect()->route('eventos.index')->with('success', 'Evento eliminado exitosamente');
+    }
+
+    private function cambioAlgoQueRequiereNuevaAprobacion(Eventos $evento, array $validated): bool
+    {
+        foreach (self::CAMPOS_QUE_REQUIEREN_NUEVA_APROBACION as $campo) {
+            // (string) evita falsos positivos por comparar tipos distintos (ej. "1" vs 1).
+            if ((string) $evento->{$campo} !== (string) ($validated[$campo] ?? $evento->{$campo})) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

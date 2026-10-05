@@ -14,21 +14,21 @@ class Inscripcion extends Model
     public $timestamps = false;
     protected $dates = ['created_at', 'updated_at'];
     
-    protected $fillable = [
-        'id_usuario',
-        'id_evento',
-        'estatus',
-        'fecha_inscripcion',
-        'fecha_envio',
-    ];
-
+   protected $fillable = [
+    'id_usuario',
+    'id_evento',
+    'estatus',
+    'fecha_inscripcion',
+    'fecha_envio',
+    'asistencia',
+];
     public function evento()
     {
         return $this->belongsTo(Eventos::class, 'id_evento', 'id_evento');
     }
 
     public function usuario()
-    {
-        return $this->belongsTo(Usuarios::class, 'id_usuario', 'id_usuario');
-    }
+{
+    return $this->belongsTo(Usuarios::class, 'id_usuario', 'id');
+}
 }

@@ -77,7 +77,7 @@
                         <th class="py-3 px-6 text-left">Nombre del Evento</th>
                         <th class="py-3 px-6 text-center">Fecha de Inscripción</th>
                         <th class="py-3 px-6 text-center">Estatus</th>
-                        <th class="py-3 px-6 text-center">Acciones</th>
+                        <th class="py-3 px-6 text-center">Constancia</th>
                     </tr>
                 </thead>
                 <tbody class="text-gray-600 text-sm font-light">
@@ -95,15 +95,26 @@
                                     <a href="{{ route('inscripciones.show', $inscripcion->id_inscripcion) }}" class="w-4 mr-2 transform hover:text-blue-500 hover:scale-110">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <!-- Botón para ver la constancia -->
-                                    <a href="{{ route('mis_eventos.ver_constancia', $inscripcion->evento->id_evento) }}" class="w-4 mr-2 transform hover:text-blue-500 hover:scale-110" target="_blank">
-                                        <i class="fa-solid fa-book"></i>
-                                    </a>
-                                    <!-- Botón para descargar la constancia -->
-                                    <a href="{{ route('mis_eventos.descargar_constancia', $inscripcion->evento->id_evento) }}" class="w-4 mr-2 transform hover:text-blue-500 hover:scale-110">
-                                        <i class="fas fa-download"></i>
-                                    </a>
+
+                                    @if ($inscripcion->motivo_constancia_bloqueada)
+                                        {{-- Todavía no cumple las condiciones: se muestra el motivo en vez de los botones --}}
+                                        <span class="text-xs text-gray-500 italic" title="{{ $inscripcion->motivo_constancia_bloqueada }}">
+                                            <i class="fas fa-lock mr-1"></i>En espera
+                                        </span>
+                                    @else
+                                        <!-- Botón para ver la constancia -->
+                                        <a href="{{ route('mis_eventos.ver_constancia', $inscripcion->evento->id_evento) }}" class="w-4 mr-2 transform hover:text-blue-500 hover:scale-110" target="_blank">
+                                            <i class="fa-solid fa-book"></i>
+                                        </a>
+                                        <!-- Botón para descargar la constancia -->
+                                        <a href="{{ route('mis_eventos.descargar_constancia', $inscripcion->evento->id_evento) }}" class="w-4 mr-2 transform hover:text-blue-500 hover:scale-110">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    @endif
                                 </div>
+                                @if ($inscripcion->motivo_constancia_bloqueada)
+                                    <p class="text-xs text-gray-400 mt-1">{{ $inscripcion->motivo_constancia_bloqueada }}</p>
+                                @endif
                             </td>
                         </tr>
                     @endforeach

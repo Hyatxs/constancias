@@ -13,22 +13,23 @@ class Eventos extends Model
     public $timestamps = false;
 
 
-    protected $fillable = [
-        'id_tipo_evento',
-        'id_evento',
-        'id_creador',
-        'id_director',
-        'nombre_evento',
-        'fecha_inicio',
-        'fecha_fin',
-        'descripcion',
-        'duracion_horas',
-        'modalidad',
-        'estatus',
-        'folio',
-        'observaciones',
-        'academia',
-    ];
+   protected $fillable = [
+    'id_tipo_evento',
+    'id_evento',
+    'id_creador',
+    'id_director',
+    'id_maestro',
+    'nombre_evento',
+    'fecha_inicio',
+    'fecha_fin',
+    'descripcion',
+    'duracion_horas',
+    'modalidad',
+    'estatus',
+    'folio',
+    'observaciones',
+    'academia',
+];
 
     public function tipoEvento() {
         return $this->belongsTo(TipoEvento::class, 'id_tipo_evento');

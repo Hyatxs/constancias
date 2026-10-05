@@ -14,12 +14,13 @@ class Evidencias extends Model
     protected $primaryKey = 'id_evidencia';
     public $timestamps = false; // Si no tienes campos de timestamps (created_at, updated_at)
 
-    protected $fillable = [
-        'id_usuario',
-        'id_evento',
-        'archivo',
-        'fecha_registro' // Cambiado a fecha_registro para que coincida con la migración
-    ];
+ protected $fillable = [
+    'id_usuario',
+    'id_evento',
+    'archivo',
+    'fecha_registro',
+    'estatus',
+];
 
     public function evento()
     {
